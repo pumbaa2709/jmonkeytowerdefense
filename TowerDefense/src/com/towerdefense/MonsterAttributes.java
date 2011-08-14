@@ -7,6 +7,7 @@ package com.towerdefense;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.Savable;
+import com.jme3.math.Vector3f;
 import java.io.IOException;
 
 /**
@@ -17,15 +18,17 @@ class MonsterAttributes implements Savable {
     private int maxHitPoints;
     private int health;
     private double moveSpeed; //speed of movement in m/s
+    private Vector3f targetLoc;
     
     public MonsterAttributes() {
 
     }
     
-    public MonsterAttributes(int maxHitPoints,int health,double moveSpeed) {
+    public MonsterAttributes(int maxHitPoints,int health,double moveSpeed,Vector3f targetLoc) {
         this.maxHitPoints = maxHitPoints;
         this.health = health;
         this.moveSpeed = moveSpeed;
+        this.targetLoc = targetLoc;
     }
 
     /**
@@ -78,5 +81,19 @@ class MonsterAttributes implements Savable {
 
     public void read(JmeImporter im) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the targetLoc
+     */
+    public Vector3f getTargetLoc() {
+        return targetLoc;
+    }
+
+    /**
+     * @param targetLoc the targetLoc to set
+     */
+    public void setTargetLoc(Vector3f targetLoc) {
+        this.targetLoc = targetLoc;
     }
 }
