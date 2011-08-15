@@ -11,23 +11,19 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Box;
+import java.util.List;
 
 /**
- *
+ * Main abstraction of an active game
  * @author bhasker
  */
 public class Game {
     
     private TDApp app;
     private AIAppState aiState;
-    private Geometry levelFloor;
-    private Geometry levelGrid;
-    private int rows;
-    private int cols;
+    private World world;
     public Game(TDApp app) {
         this.app = app;        
-        rows = 10;
-        cols = 20;
     }
     
     public boolean startGame() {
@@ -40,36 +36,14 @@ public class Game {
     }
     
     public boolean loadLevel() {
-        
         System.out.println("Game::loadLevel");
-        //create a green floor for the level.
-        levelGrid = new Geometry("floorGrid",new Grid(rows+1,cols+1,1.0f));
-       
-        Material gridMat = new Material(app.getAssetManager(),"Common/MatDefs/Misc/SolidColor.j3md");
-        gridMat.getAdditionalRenderState().setWireframe(true);
-        gridMat.setColor("m_Color",new ColorRGBA(0.0f,0.0f,0.0f,1.0f));
-        levelGrid.setMaterial(gridMat);
-        levelGrid.center().move(new Vector3f(cols/2,0.1f,rows/2));
-       
-        levelFloor = new Geometry("floor",new Box(Vector3f.ZERO,cols/2,0.0f,rows/2f));     
-        Material floorMat = new Material(app.getAssetManager(),"Common/MatDefs/Misc/SolidColor.j3md");
-        floorMat.setColor("m_Color",new ColorRGBA(0.2f,0.6f,0.2f,1.0f));
-        levelFloor.setMaterial(floorMat);
-        levelFloor.center().move(new Vector3f(cols/2,0.0f,rows/2));
-        
-        app.getRootNode().attachChild(levelFloor);
-        app.getRootNode().attachChild(levelGrid);
-        app.getCamera().setLocation(new Vector3f(cols/2.0f,20.0f,(rows/2.0f)+0.001f));
-        app.getCamera().lookAt(new Vector3f(cols/2,0.0f,rows/2),Vector3f.UNIT_Y);
-        app.getFlyByCamera().setEnabled(false);
-        return true;
+        world = new World(app,10,20,1.0f);
+        return world.loadLevel("");
     }
     
     private void initAIAppState() {
         System.out.println("Game::initAIAppState()");
-        aiState = new AIAppState(); 
-        aiState.addSpawnPoint(Vector3f.ZERO);
-        aiState.addTarget(new Vector3f(cols,0,rows));
+        aiState = new AIAppState(world);         
     }
     
     private boolean initHud() {

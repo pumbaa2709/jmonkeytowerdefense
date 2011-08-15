@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.lang.Math;
 
 /**
- *
+ * A simple class to provide the basic AI behind a monster in tower defense
+ * 
  * @author Bhasker Hariharan <bhasker@bhasker.net>
  */
 class MonsterAIControl extends AbstractControl implements Savable,Cloneable {

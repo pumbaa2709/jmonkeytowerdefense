@@ -11,7 +11,12 @@ import com.jme3.math.Vector3f;
 import java.io.IOException;
 
 /**
- *
+ * A class to encapsulate all data about a given monster.
+ * 
+ * This class will also include any active effects on each monster. Like if
+ * a slowing tower hits a monster an active slow effect will be added to the monster
+ * in the effects field. 
+ * 
  * @author Bhasker Hariharan <bhasker@bhasker.net>
  */
 class MonsterAttributes implements Savable {
