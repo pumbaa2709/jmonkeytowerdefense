@@ -14,12 +14,13 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Date;
-import java.util.List;
-/**
- *
+
+/** 
+ * This is the main appstate class to control the AI of the game. 
+ * 
+ * Its responsible for spawning waves of monsters etc.
+ * 
  * @author bhasker
  */
 public class AIAppState extends AbstractAppState {
@@ -28,15 +29,11 @@ public class AIAppState extends AbstractAppState {
     private int waveNumber=0;
     private long lastSpawnTime = 0;
     private long waveSpawnInterval = 10000;
-    private HashMap<String,Spatial> monsters;
     private TDApp app;
-    private List<Vector3f> targets;
-    private List<Vector3f> spawnPoints;
+    private World world;
 
-    public AIAppState() {
-        targets = new ArrayList();
-        spawnPoints = new ArrayList();        
-        setMonsters(new HashMap<String,Spatial>());        
+    public AIAppState(World world) {
+        this.world = world;
     }
     
     @Override
@@ -50,7 +47,7 @@ public class AIAppState extends AbstractAppState {
         //Check for attack from towers
         Date d = new Date();
         long curTime = d.getTime();
-        //
+        //spawn every certain seconds.
         if ((curTime-getLastSpawnTime())>getWaveSpawnInterval()) {
             if (getWaveNumber()<100) {
                 spawnWave();
@@ -69,8 +66,8 @@ public class AIAppState extends AbstractAppState {
         System.out.println("Spawning Wave:"+getWaveNumber());
         //spawn X new monsters with hitpoints scaled to wave number
         //pick a random spawn point
-        Vector3f waveSpawnPoint = spawnPoints.get((int)(Math.random()*spawnPoints.size()));
-        Vector3f targetLoc = targets.get((int)(Math.random()*targets.size()));
+        Vector3f waveSpawnPoint = world.getSpawnPoints().get((int)(Math.random()*world.getSpawnPoints().size()));
+        Vector3f targetLoc = world.getTargets().get((int)(Math.random()*world.getTargets().size()));
         for (int i=0;i<getWaveStrength();i++) {
             
             Box box = new Box(waveSpawnPoint,0.25f,0.25f,0.25f);
@@ -85,7 +82,7 @@ public class AIAppState extends AbstractAppState {
                     targetLoc
                     )
                     ));
-            getMonsters().put(monsterId, monster);
+            world.addMonster(monsterId, monster);
             Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/SolidColor.j3md");
             mat.setColor("m_Color", ColorRGBA.Red);
             monster.setMaterial(mat);
@@ -142,34 +139,5 @@ public class AIAppState extends AbstractAppState {
     public void setWaveSpawnInterval(long waveSpawnInterval) {
         this.waveSpawnInterval = waveSpawnInterval;
     }
-
-    /**
-     * @return the monsters
-     */
-    public HashMap<String,Spatial> getMonsters() {
-        return monsters;
-    }
-
-    /**
-     * @param monsters the monsters to set
-     */
-    public void setMonsters(HashMap<String,Spatial> monsters) {
-        this.monsters = monsters;
-    }
     
-    /**
-     * 
-     * @param targetLoc target location to add to list of valid targets
-     */
-    public void addTarget(Vector3f targetLoc) {
-        targets.add(targetLoc);
-    }
-    
-    /**
-     * 
-     * @param spawnPoint additional spawnPoints from where waves can spawn
-     */
-    public void addSpawnPoint(Vector3f spawnPoint) {
-        spawnPoints.add(spawnPoint);
-    }
 }

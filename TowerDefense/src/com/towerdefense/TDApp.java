@@ -85,4 +85,11 @@ public class TDApp extends SimpleApplication implements ScreenController {
         curGame = new Game(this);
         curGame.startGame();
     }
+
+    /**
+     * @return the curGame
+     */
+    public Game getCurGame() {
+        return curGame;
+    }
 }
