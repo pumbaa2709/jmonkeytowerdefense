@@ -22,14 +22,13 @@ import java.io.IOException;
 class MonsterAttributes implements Savable {
     private int maxHitPoints;
     private int health;
-    private double moveSpeed; //speed of movement in m/s
+    private float moveSpeed; //speed of movement in m/s
     private Vector3f targetLoc;
     
-    public MonsterAttributes() {
-
-    }
-    
-    public MonsterAttributes(int maxHitPoints,int health,double moveSpeed,Vector3f targetLoc) {
+    public MonsterAttributes(int maxHitPoints,
+                             int health,
+                             float moveSpeed,
+                             Vector3f targetLoc) {
         this.maxHitPoints = maxHitPoints;
         this.health = health;
         this.moveSpeed = moveSpeed;
@@ -67,14 +66,14 @@ class MonsterAttributes implements Savable {
     /**
      * @return the moveSpeed
      */
-    public double getMoveSpeed() {
+    public float getMoveSpeed() {
         return moveSpeed;
     }
 
     /**
      * @param moveSpeed the moveSpeed to set
      */
-    public void setMoveSpeed(double moveSpeed) {
+    public void setMoveSpeed(float moveSpeed) {
         this.moveSpeed = moveSpeed;
     }
 

@@ -14,6 +14,8 @@ import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.lang.reflect.Array;
+
 
 /**
  * World is an encapsulation of the current state of a map. 
@@ -35,7 +37,27 @@ public class World {
     private List<Vector3f> targets;
     private List<Vector3f> spawnPoints;
     private HashMap<String,Spatial> monsters;
+    private PathGenerator pathGen;
+
+    /**
+     * @return the pathGen
+     */
+    public PathGenerator getPathGen() {
+        return pathGen;
+    }
     
+    //Represents one square on the map grid.
+    public class Square {
+        //isOccupied is true if the map square has a tower on it
+        //and can't be navigated through.
+        public boolean isOccupied;
+        
+        public Square() {
+            isOccupied=false;
+        }
+    }
+    
+    private Square[][] grid;
 
     
 
@@ -50,9 +72,18 @@ public class World {
         this.cols = cols;
         this.square_sz = square_sz;
         this.app = app;
-        this.targets = new ArrayList();
-        this.spawnPoints = new ArrayList();        
+        this.targets = new ArrayList<Vector3f>();
+        this.spawnPoints = new ArrayList<Vector3f>();        
         this.monsters = new HashMap<String,Spatial>();
+        initNavGrid(rows,cols);
+    }
+    
+    public void initNavGrid(int rows,int cols) {
+        this.grid = (Square[][])Array.newInstance(Square.class,rows,cols);
+        for(int i=0;i<rows;i++) 
+            for (int j=0;j<cols;j++) {
+                grid[i][j] = new Square();
+            }
     }
     
     public boolean loadLevel(String name) {
@@ -78,7 +109,11 @@ public class World {
         app.getFlyByCamera().setEnabled(false);
 
         spawnPoints.add(Vector3f.ZERO);
-        targets.add(new Vector3f(cols,0,rows));
+        targets.add(new Vector3f(cols-1,0,rows-1));
+        
+        //create the pathGenerator object and pass in the navigation grid 
+        this.pathGen = new PathGenerator(this.grid);
+        
         return true;
     }
 
