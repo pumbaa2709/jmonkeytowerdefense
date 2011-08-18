@@ -9,9 +9,13 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Box;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main abstraction of an active game
@@ -62,7 +66,18 @@ public class Game {
     }
     
     public void update(float tpf) {
-        
+        //Walk List of monsters and remove any that have reached the last square.
+        HashMap<String,Spatial> monsters = world.getMonsters();
+
+        Iterator it = monsters.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<String,Spatial> monsterEntry = (Map.Entry<String,Spatial>)it.next();
+            MonsterAIControl ctrl = monsterEntry.getValue().getControl(MonsterAIControl.class);
+            if (ctrl.isAtTarget()) {
+                app.getRootNode().detachChild(monsterEntry.getValue());
+                it.remove();//remove this from the monsters list.
+            }
+        }
     }
         
     public void render(RenderManager rm){

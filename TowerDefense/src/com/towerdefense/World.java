@@ -94,13 +94,13 @@ public class World {
         gridMat.getAdditionalRenderState().setWireframe(true);
         gridMat.setColor("m_Color",new ColorRGBA(0.0f,0.0f,0.0f,1.0f));
         levelGrid.setMaterial(gridMat);
-        levelGrid.center().move(new Vector3f(cols/2,0.1f,rows/2));
+        levelGrid.center().move(new Vector3f(cols/2-0.5f,0.1f,rows/2-0.5f));
        
         levelFloor = new Geometry("floor",new Box(Vector3f.ZERO,cols/2,0.0f,rows/2f));     
         Material floorMat = new Material(app.getAssetManager(),"Common/MatDefs/Misc/SolidColor.j3md");
         floorMat.setColor("m_Color",new ColorRGBA(0.2f,0.6f,0.2f,1.0f));
         levelFloor.setMaterial(floorMat);
-        levelFloor.center().move(new Vector3f(cols/2,0.0f,rows/2));
+        levelFloor.center().move(new Vector3f(cols/2-0.5f,0.0f,rows/2-0.5f));
         
         app.getRootNode().attachChild(levelFloor);
         app.getRootNode().attachChild(levelGrid);
@@ -139,4 +139,5 @@ public class World {
     public void removeMonster(String name) {
         monsters.remove(name);
     }
+    
 }

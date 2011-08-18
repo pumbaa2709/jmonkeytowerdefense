@@ -26,56 +26,59 @@ import java.util.List;
  */
 class MonsterAIControl extends AbstractControl implements Savable, Cloneable {
 
-    MonsterAttributes attribs;
-    List<Vector3f> currentPath;
+    private MonsterAttributes attribs;
+    private List<Vector3f> currentPath;
     private final PathGenerator pathGen;
-    Vector3f nextStop;
-    Vector3f lastPos;
+    private Vector3f nextStop;
+    private Vector3f lastPos;
+    private boolean atTarget;
 
     public MonsterAIControl(MonsterAttributes attribs, PathGenerator pathGen) {
         super();
         this.attribs = attribs;
         this.pathGen = pathGen;
+        atTarget = false;
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        if (spatial != null && attribs != null) {
-            float movePerFrame = (tpf * attribs.getMoveSpeed());
+        if (spatial != null && getAttribs() != null) {
+            float movePerFrame = (tpf * getAttribs().getMoveSpeed());
 
-            if (currentPath == null) {
+            if (getCurrentPath() == null) {
                 currentPath = pathGen.generatePath(spatial.getLocalTranslation(),
-                                                   this.attribs.getTargetLoc());
+                                                   this.getAttribs().getTargetLoc());
                 //no valid path then just return and don't try and move anywhere.
-                if (currentPath == null) {
+                if (getCurrentPath() == null) {
                     return;
                 }
                 lastPos = spatial.getLocalTranslation().clone();
-                nextStop = currentPath.get(0);
+                nextStop = getCurrentPath().get(0);
                 nextStop.y = spatial.getLocalTranslation().y;
                 //System.out.println("Next Stop is:"+nextStop.toString());
-                currentPath.remove(0);
+                getCurrentPath().remove(0);
             }
             else {
-                if ((spatial.getLocalTranslation().equals(nextStop)
-                     ||(spatial.getLocalTranslation().subtract(nextStop).length()<0.25))
+                if ((spatial.getLocalTranslation().equals(getNextStop())
+                     ||(spatial.getLocalTranslation().subtract(getNextStop()).length()<0.25))
                      && !currentPath.isEmpty()) {
                     lastPos = spatial.getLocalTranslation().clone();
-                    nextStop = currentPath.get(0);
+                    nextStop = getCurrentPath().get(0);
                     nextStop.y = spatial.getLocalTranslation().y;
-                    currentPath.remove(0);
+                    getCurrentPath().remove(0);
                 }
-                if (currentPath.isEmpty() &&
-                        (spatial.getLocalTranslation().equals(nextStop) ||
-                        (spatial.getLocalTranslation().subtract(nextStop).length()<0.01))) {
+                if (getCurrentPath().isEmpty() &&
+                        (spatial.getLocalTranslation().equals(getNextStop()) ||
+                        (spatial.getLocalTranslation().subtract(getNextStop()).length()<0.01))) {
                     //we reached our destination stop.
                     //System.out.println("CurrentPath is empty");
+                    atTarget = true;
                     return;
                 }
             }
-            Vector3f newLocation = lastPos.clone();
-            newLocation.interpolate(nextStop, movePerFrame);
-            spatial.move(newLocation.subtract(lastPos));
+            Vector3f newLocation = getLastPos().clone();
+            newLocation.interpolate(getNextStop(), movePerFrame);
+            spatial.move(newLocation.subtract(getLastPos()));
         }
     }
 
@@ -87,7 +90,7 @@ class MonsterAIControl extends AbstractControl implements Savable, Cloneable {
 
     @Override
     public Control cloneForSpatial(Spatial spatial) {
-        final MonsterAIControl control = new MonsterAIControl(attribs,this.pathGen);
+        final MonsterAIControl control = new MonsterAIControl(getAttribs(),this.pathGen);
         control.setSpatial(spatial);
         control.setEnabled(isEnabled());
         return control;
@@ -97,7 +100,7 @@ class MonsterAIControl extends AbstractControl implements Savable, Cloneable {
     public void read(JmeImporter im) throws IOException {
         super.read(im);
         InputCapsule ic = im.getCapsule(this);
-        attribs = (MonsterAttributes) ic.readSavable("MonsterAttributes", null);
+        setAttribs((MonsterAttributes) ic.readSavable("MonsterAttributes", null));
         spatial = (Spatial) ic.readSavable("spatial", null);
     }
 
@@ -105,7 +108,49 @@ class MonsterAIControl extends AbstractControl implements Savable, Cloneable {
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);
         OutputCapsule oc = ex.getCapsule(this);
-        oc.write(attribs, "MonsterAttributes", null);
+        oc.write(getAttribs(), "MonsterAttributes", null);
         oc.write(spatial, "spatial", null);
+    }
+
+    /**
+     * @return the attribs
+     */
+    public MonsterAttributes getAttribs() {
+        return attribs;
+    }
+
+    /**
+     * @param attribs the attribs to set
+     */
+    public void setAttribs(MonsterAttributes attribs) {
+        this.attribs = attribs;
+    }
+
+    /**
+     * @return the currentPath
+     */
+    public List<Vector3f> getCurrentPath() {
+        return currentPath;
+    }
+
+    /**
+     * @return the nextStop
+     */
+    public Vector3f getNextStop() {
+        return nextStop;
+    }
+
+    /**
+     * @return the lastPos
+     */
+    public Vector3f getLastPos() {
+        return lastPos;
+    }
+
+    /**
+     * @return the reachedTarget
+     */
+    public boolean isAtTarget() {
+        return atTarget;
     }
 }
