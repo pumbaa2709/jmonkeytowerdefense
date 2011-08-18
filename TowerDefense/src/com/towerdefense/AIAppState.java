@@ -78,9 +78,10 @@ public class AIAppState extends AbstractAppState {
                     new MonsterAttributes(
                     100+5*getWaveNumber(),
                     100+5*getWaveNumber(),
-                    1.0+(float)getWaveNumber()/100,
+                    3.0f+(float)getWaveNumber()/100,
                     targetLoc
-                    )
+                    ),
+                    world.getPathGen()
                     ));
             world.addMonster(monsterId, monster);
             Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/SolidColor.j3md");
