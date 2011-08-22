@@ -25,6 +25,7 @@ public class Game {
     
     private TDApp app;
     private AIAppState aiState;
+    private PlayerAppState playerState;
     private World world;
     public Game(TDApp app) {
         this.app = app;        
@@ -33,6 +34,7 @@ public class Game {
     public boolean startGame() {
         System.out.println("Game::startGame()");
         loadLevel();
+        initPlayer();
         initHud();
         initAIAppState();
         app.getStateManager().attach(aiState);
@@ -43,6 +45,14 @@ public class Game {
         System.out.println("Game::loadLevel");
         world = new World(app,10,20,1.0f);
         return world.loadLevel("");
+    }
+
+    private void initPlayer() {
+        playerState = new PlayerAppState(world);
+        //TODO:make this all readable from level data
+        playerState.setMoney(20);
+        playerState.setLivesLeft(20);
+        app.getStateManager().attach(playerState);
     }
     
     private void initAIAppState() {
@@ -64,8 +74,12 @@ public class Game {
         app.getStateManager().detach(aiState);
         return true;
     }
-    
-    public void update(float tpf) {
+
+    /**
+     * Removes any monsters that have reached the end and adjusts scores
+     * for the player.
+     */
+    private void despawnMonsters() {
         //Walk List of monsters and remove any that have reached the last square.
         HashMap<String,Spatial> monsters = world.getMonsters();
 
@@ -76,8 +90,13 @@ public class Game {
             if (ctrl.isAtTarget()) {
                 app.getRootNode().detachChild(monsterEntry.getValue());
                 it.remove();//remove this from the monsters list.
+                playerState.subtractLives(ctrl.getAttribs().getLifeCost());
             }
         }
+    }
+    
+    public void update(float tpf) {
+        despawnMonsters();
     }
         
     public void render(RenderManager rm){
