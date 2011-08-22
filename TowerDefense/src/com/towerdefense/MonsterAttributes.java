@@ -4,8 +4,10 @@
  */
 package com.towerdefense;
 
+import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
 import com.jme3.math.Vector3f;
 import java.io.IOException;
@@ -24,6 +26,7 @@ class MonsterAttributes implements Savable {
     private int health;
     private float moveSpeed; //speed of movement in m/s
     private Vector3f targetLoc;
+    private int lifeCost;
     
     public MonsterAttributes(int maxHitPoints,
                              int health,
@@ -33,6 +36,7 @@ class MonsterAttributes implements Savable {
         this.health = health;
         this.moveSpeed = moveSpeed;
         this.targetLoc = targetLoc;
+        this.lifeCost = 1;//by default all monsters cost one life to player.
     }
 
     /**
@@ -77,14 +81,23 @@ class MonsterAttributes implements Savable {
         this.moveSpeed = moveSpeed;
     }
 
-    private static final String CONTROL_DIR_NAME = "controlDir";
     
     public void write(JmeExporter ex) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        OutputCapsule oc= ex.getCapsule(this);
+        oc.write(maxHitPoints,"maxHitPoints",100);
+        oc.write(health,"health",100);
+        oc.write(moveSpeed,"moveSpeed",1.0f);
+        oc.write(targetLoc,"targetLoc",Vector3f.ZERO);
+        oc.write(lifeCost,"lifeCost",1);
     }
 
     public void read(JmeImporter im) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        InputCapsule ic = im.getCapsule(this);
+        setMaxHitPoints(ic.readInt("maxHitPoints", 100));
+        setHealth(ic.readInt("health",100));
+        setMoveSpeed(ic.readFloat("moveSpeed", 1.0f));
+        setTargetLoc((Vector3f)ic.readSavable("targetLoc",Vector3f.ZERO));
+        setLifeCost(ic.readInt("lifeCost",1));
     }
 
     /**
@@ -99,5 +112,19 @@ class MonsterAttributes implements Savable {
      */
     public void setTargetLoc(Vector3f targetLoc) {
         this.targetLoc = targetLoc;
+    }
+
+    /**
+     * @return the lifeCost
+     */
+    public int getLifeCost() {
+        return lifeCost;
+    }
+
+    /**
+     * @param lifeCost the lifeCost to set
+     */
+    public void setLifeCost(int lifeCost) {
+        this.lifeCost = lifeCost;
     }
 }
