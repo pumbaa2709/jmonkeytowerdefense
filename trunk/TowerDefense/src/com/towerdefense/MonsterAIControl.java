@@ -58,6 +58,19 @@ class MonsterAIControl extends AbstractControl implements Savable, Cloneable {
                 //System.out.println("Next Stop is:"+nextStop.toString());
                 getCurrentPath().remove(0);
             }
+            else if (!pathGen.validPath(getCurrentPath())) {
+                System.out.println("Regenerating path");
+                //if the current path is invalid recalculate
+                currentPath = pathGen.generatePath(spatial.getLocalTranslation(),
+                                                   this.getAttribs().getTargetLoc());
+                if (getCurrentPath()==null){ 
+                    return;
+                }
+                lastPos = spatial.getLocalTranslation().clone();
+                nextStop = getCurrentPath().get(0);
+                nextStop.y = spatial.getLocalTranslation().y;
+                getCurrentPath().remove(0);
+            }
             else {
                 if ((spatial.getLocalTranslation().equals(getNextStop())
                      ||(spatial.getLocalTranslation().subtract(getNextStop()).length()<0.25))
@@ -77,7 +90,11 @@ class MonsterAIControl extends AbstractControl implements Savable, Cloneable {
                 }
             }
             Vector3f newLocation = getLastPos().clone();
-            newLocation.interpolate(getNextStop(), movePerFrame);
+            if (movePerFrame<1.0f)
+                newLocation.interpolate(getNextStop(), movePerFrame);
+            else 
+                newLocation.interpolate(getNextStop(), 1.0f);
+
             spatial.move(newLocation.subtract(getLastPos()));
         }
     }

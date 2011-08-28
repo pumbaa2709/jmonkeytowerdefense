@@ -51,6 +51,11 @@ public class World {
         public Square() {
             isOccupied=false;
         }
+        
+        @Override
+        public String toString() {
+            return isOccupied?"1 ":"0 ";
+        }
     }
     
     private Square[][] grid;
@@ -165,6 +170,7 @@ public class World {
      */
     public void addTower(String name,Spatial spatial) {
         towers.put(name,spatial);
+        this.grid[(int)spatial.getLocalTranslation().z][(int)spatial.getLocalTranslation().x].isOccupied=true;
     }
     
     /**
@@ -176,6 +182,10 @@ public class World {
      * @param name Name of the tower to remove.
      */
     public void removeTower(String name) {
+        Spatial tower = towers.get(name);
+        if (tower!=null) {
+            this.grid[(int)tower.getLocalTranslation().z][(int)tower.getLocalTranslation().x].isOccupied=false;
+        }
         towers.remove(name);
     }
     
@@ -214,4 +224,15 @@ public class World {
         return grid;
     }
 
+    /** 
+     * print the grid to System.out
+     */
+    public void printGrid() {
+        for (Square[] row:grid) {
+            for (Square sq:row){ 
+                System.out.print(sq);
+            }
+            System.out.print("\n");
+        }
+    }
 }
