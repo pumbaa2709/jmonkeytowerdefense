@@ -66,7 +66,6 @@ public class PathGenerator {
      * @return 
      */
     List<Vector3f> generatePath(Vector3f start,Vector3f end) {
-        System.out.println("PathGenerator::generatePath() Enter");
         Queue<Vector3f> unvisited=new LinkedList<Vector3f>();
         
         Set<Vector3f> closedSet= new HashSet<Vector3f>();
@@ -122,7 +121,6 @@ public class PathGenerator {
     private List<Vector3f> extractPath(Vector3f start, 
                                        Vector3f end,
                                        HashMap<Vector3f, Integer> visited) {
-        System.out.println("PathGenerator::extractPath() Enter");
         List<Vector3f> path = new LinkedList<Vector3f>();
         Vector3f curLoc = end;
         while (visited.get(curLoc)!=0) {
@@ -141,5 +139,34 @@ public class PathGenerator {
             curLoc = tmpLoc;
         }
         return path;
+    }
+    
+    /**
+     * checks if any of the locations in the path is blocked if
+     * so returns false.
+     * 
+     * @param a list of locations that make up the path
+     */
+    public boolean validPath(List<Vector3f> path) {
+        for (Vector3f v:path) {
+            if (grid[(int)v.z][(int)v.x].isOccupied) {
+                System.out.println("PathGenerator::validPath:false");
+                printGrid();
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /** 
+     * print the grid to System.out
+     */
+    public void printGrid() {
+        for (Square[] row:grid) {
+            for (Square sq:row){ 
+                System.out.print(sq);
+            }
+            System.out.print("\n");
+        }
     }
 }

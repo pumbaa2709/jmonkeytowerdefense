@@ -49,9 +49,11 @@ public class PlayerAppState extends AbstractAppState {
        long curTime = d.getTime();
        if ((curTime-getLastTowerSpawnTime())>getTowerSpawnTime()) {
            spawnTower();
+           spawnTower();
+           spawnTower();
+           spawnTower();
            setLastTowerSpawnTime(curTime);
        }
-        
    }
    
    @Override
@@ -65,7 +67,7 @@ public class PlayerAppState extends AbstractAppState {
     * 
     */
    public void spawnTower() {
-       Box box = new Box(getTowerLoc(),0.1f,0.5f,0.1f);
+       Box box = new Box(Vector3f.ZERO,0.1f,0.5f,0.1f);
        String towerId = "tower_"+getTowerNumber();
        setTowerNumber(getTowerNumber()+1);
        Spatial tower = new Geometry(towerId,box);
@@ -78,12 +80,12 @@ public class PlayerAppState extends AbstractAppState {
                0.2f,//recharge time in seconds
                true// if the tower is initially charged or not.
                )));
-
-       world.addTower(towerId, tower);
        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/SolidColor.j3md");
        mat.setColor("m_Color", ColorRGBA.Red);
        tower.setMaterial(mat);
-       app.getRootNode().attachChild(tower);       
+       tower.move(getTowerLoc());
+       world.addTower(towerId, tower);
+       app.getRootNode().attachChild(tower);      
    }
    
    /** 
@@ -92,9 +94,13 @@ public class PlayerAppState extends AbstractAppState {
     * @return the vector position for the tower.
     */
    public Vector3f getTowerLoc() {
-       return new Vector3f((float)Math.random()*world.getCols(),
-               2.0f,
-               (float)Math.random()*world.getRows());
+       float col = (float)Math.random()*world.getCols();
+       float row = (float)Math.random()*world.getRows();
+       col = (int)(col);
+       row = (int)(row);
+       return new Vector3f(col,
+               0.0f,
+               row);
    }
    
    /**
